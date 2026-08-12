@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WHO IS REAL?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ===================== MAIN MENU ===================== -->
+<section id="screen-menu" class="screen screen--active">
+  <div class="brand">
+    <div class="brand__eyebrow">FACILITY ACCESS TERMINAL</div>
+    <h1 class="brand__title" id="titleGlitch">WHO IS <span class="brand__title-accent">REAL?</span></h1>
+    <p class="brand__sub">Your memory is not evidence. Trust is not truth.</p>
+  </div>
+
+  <div class="panel panel--menu">
+    <div id="menuHome" class="menu-stack">
+      <label class="field">
+        <span class="field__label">CALLSIGN</span>
+        <input id="nameInput" class="field__input" type="text" maxlength="16" placeholder="Enter your name" autocomplete="off" />
+      </label>
+      <div class="menu-actions">
+        <button id="btnCreate" class="btn btn--primary">CREATE ROOM</button>
+        <button id="btnShowJoin" class="btn btn--ghost">JOIN ROOM</button>
+      </div>
+      <p id="menuError" class="error-text" hidden></p>
+    </div>
+
+    <div id="menuJoin" class="menu-stack" hidden>
+      <label class="field">
+        <span class="field__label">ROOM CODE</span>
+        <input id="codeInput" class="field__input field__input--code" type="text" maxlength="5" placeholder="X7K9P" autocomplete="off" />
+      </label>
+      <div class="menu-actions">
+        <button id="btnJoin" class="btn btn--primary">JOIN</button>
+        <button id="btnBackToHome" class="btn btn--ghost">BACK</button>
+      </div>
+      <p id="joinError" class="error-text" hidden></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LOBBY / ROOM ===================== -->
+<section id="screen-lobby" class="screen">
+  <header class="lobby-header">
+    <div class="lobby-header__title">WHO IS REAL?</div>
+    <div class="lobby-header__room">
+      ROOM <span id="roomCodeDisplay" class="room-code">-----</span>
+      <button id="btnCopyCode" class="btn-icon" title="Copy room code">⧉</button>
+    </div>
+  </header>
+
+  <div class="panel panel--lobby">
+    <div class="lobby-panel__head">
+      <span id="playerCount">0 / 12</span>
+      <span id="lobbyStatus" class="status-pill status-pill--waiting">WAITING FOR PLAYERS</span>
+    </div>
+    <ul id="playerList" class="player-list"></ul>
+  </div>
+
+  <div class="lobby-footer">
+    <p id="lobbyHint" class="lobby-hint">Minimum 6 investigators required to begin.</p>
+    <button id="btnStart" class="btn btn--danger" hidden>START GAME</button>
+    <button id="btnLeave" class="btn btn--ghost-sm">LEAVE ROOM</button>
+  </div>
+</section>
+
+<!-- ===================== GAMEPLAY SCREEN ===================== -->
+<section id="screen-game" class="screen game-screen">
+  <header class="game-hud">
+    <div class="game-hud__left">
+      <span class="game-hud__room">ROOM <b id="gameRoomCode">-----</b></span>
+      <span class="game-hud__round" id="gameRound">Vòng 0</span>
+    </div>
+    <div class="game-hud__center">
+      <span id="gamePhaseLabel" class="phase-pill">LOBBY</span>
+      <span id="gameTimer" class="game-timer">--</span>
+    </div>
+    <div class="game-hud__right">
+      <span id="aliveCount" class="game-hud__alive">-- sống</span>
+    </div>
+  </header>
+
+  <div id="gameNotice" class="game-notice" hidden></div>
+
+  <div class="game-arena">
+    <canvas id="gameCanvas" width="720" height="420" aria-label="Game arena"></canvas>
+  </div>
+
+  <div class="game-body">
+    <!-- role reveal, shown during STARTING -->
+    <div id="roleBanner" class="role-banner" hidden>
+      <div class="role-banner__eyebrow">DANH TÍNH CỦA BẠN</div>
+      <div id="roleBannerRole" class="role-banner__role">???</div>
+      <div id="roleBannerTeammates" class="role-banner__teammates"></div>
+    </div>
+
+    <!-- night-kill / vote target selection -->
+    <div id="actionPanel" class="action-panel" hidden>
+      <div id="actionPanelLabel" class="action-panel__label">Chọn mục tiêu</div>
+      <div id="actionTargets" class="action-targets"></div>
+      <button id="btnSkipVote" class="btn btn--ghost-sm" hidden>BỎ QUA (SKIP)</button>
+      <div id="actionFeedback" class="action-feedback"></div>
+    </div>
+
+    <div id="voteProgress" class="vote-progress" hidden></div>
+
+    <!-- elimination outcome, shown during RESULT -->
+    <div id="resultCard" class="result-card" hidden></div>
+
+    <div class="player-status-panel">
+      <div class="player-status-panel__label">NGƯỜI CHƠI</div>
+      <ul id="gamePlayerList" class="player-status-list"></ul>
+    </div>
+  </div>
+
+  <div class="game-chat">
+    <div id="chatLog" class="chat-log" aria-live="polite"></div>
+    <form id="chatForm" class="chat-form">
+      <input id="chatInput" class="chat-form__input" type="text" maxlength="240" placeholder="Nhắn tin..." autocomplete="off" />
+      <button type="submit" class="btn-icon chat-form__send" title="Gửi">➤</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== GAME OVER OVERLAY ===================== -->
+<div id="gameOverOverlay" class="overlay overlay--gameover" hidden>
+  <div class="gameover-panel">
+    <div id="gameOverEyebrow" class="gameover-panel__eyebrow">TRẬN ĐẤU KẾT THÚC</div>
+    <h2 id="gameOverWinner" class="gameover-panel__winner">-</h2>
+    <ul id="gameOverResults" class="gameover-results"></ul>
+    <div class="gameover-actions">
+      <button id="btnRematch" class="btn btn--primary" hidden>CHƠI LẠI</button>
+      <button id="btnReturnLobby" class="btn btn--ghost">VỀ SẢNH CHỜ</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
