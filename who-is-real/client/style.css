@@ -327,6 +327,9 @@ body {
   display: flex; align-items: center; justify-content: center;
   z-index: 100;
 }
+.overlay[hidden] {
+  display: none;
+}
 .overlay__content { text-align: center; }
 .overlay__eyebrow {
   font-size: 12px; letter-spacing: 4px; color: var(--accent-red);
